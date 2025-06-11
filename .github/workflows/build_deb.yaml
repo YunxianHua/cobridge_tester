@@ -13,57 +13,57 @@ jobs:
             arch: amd64
             distro: focal
             label: ubuntu-latest
-          - ros_distribution: noetic
-            arch: arm64
-            distro: focal
-            label: [ linux-arm-64-8c-32g-300gb ]
-          - ros_distribution: melodic
-            arch: amd64
-            distro: bionic
-            label: ubuntu-latest
-          - ros_distribution: melodic
-            arch: arm64
-            distro: bionic
-            label: [ linux-arm-64-8c-32g-300gb ]
-          - ros_distribution: foxy
-            arch: amd64
-            distro: focal
-            label: ubuntu-latest
-          - ros_distribution: foxy
-            arch: arm64
-            distro: focal
-            label: [ linux-arm-64-8c-32g-300gb ]
-          - ros_distribution: humble
-            arch: amd64
-            distro: jammy
-            label: ubuntu-latest
-          - ros_distribution: humble
-            arch: arm64
-            distro: jammy
-            label: [ linux-arm-64-8c-32g-300gb ]
-          - ros_distribution: jazzy
-            arch: amd64
-            distro: noble
-            label: ubuntu-latest
-          - ros_distribution: jazzy
-            arch: arm64
-            distro: noble
-            label: [ linux-arm-64-8c-32g-300gb ]
+#          - ros_distribution: noetic
+#            arch: arm64
+#            distro: focal
+#            label: [ linux-arm-64-8c-32g-300gb ]
+#          - ros_distribution: melodic
+#            arch: amd64
+#            distro: bionic
+#            label: ubuntu-latest
+#          - ros_distribution: melodic
+#            arch: arm64
+#            distro: bionic
+#            label: [ linux-arm-64-8c-32g-300gb ]
+#          - ros_distribution: foxy
+#            arch: amd64
+#            distro: focal
+#            label: ubuntu-latest
+#          - ros_distribution: foxy
+#            arch: arm64
+#            distro: focal
+#            label: [ linux-arm-64-8c-32g-300gb ]
+#          - ros_distribution: humble
+#            arch: amd64
+#            distro: jammy
+#            label: ubuntu-latest
+#          - ros_distribution: humble
+#            arch: arm64
+#            distro: jammy
+#            label: [ linux-arm-64-8c-32g-300gb ]
+#          - ros_distribution: jazzy
+#            arch: amd64
+#            distro: noble
+#            label: ubuntu-latest
+#          - ros_distribution: jazzy
+#            arch: arm64
+#            distro: noble
+#            label: [ linux-arm-64-8c-32g-300gb ]
 
     name: Build deb (ROS ${{ matrix.ros_distribution }} - ${{ matrix.arch }})
     runs-on: ${{ matrix.label }}
     container: cobridge/ros-${{ matrix.ros_distribution }}:latest
     outputs:
       matrix_result_noetic_amd64: ${{ steps.build_deb.outputs.matrix_result_noetic_amd64 }}
-      matrix_result_noetic_arm64: ${{ steps.build_deb.outputs.matrix_result_noetic_arm64 }}
-      matrix_result_melodic_amd64: ${{ steps.build_deb.outputs.matrix_result_melodic_amd64 }}
-      matrix_result_melodic_arm64: ${{ steps.build_deb.outputs.matrix_result_melodic_arm64 }}
-      matrix_result_foxy_amd64: ${{ steps.build_deb.outputs.matrix_result_foxy_amd64 }}
-      matrix_result_foxy_arm64: ${{ steps.build_deb.outputs.matrix_result_foxy_arm64 }}
-      matrix_result_humble_amd64: ${{ steps.build_deb.outputs.matrix_result_humble_amd64 }}
-      matrix_result_humble_arm64: ${{ steps.build_deb.outputs.matrix_result_humble_arm64 }}
-      matrix_result_jazzy_amd64: ${{ steps.build_deb.outputs.matrix_result_jazzy_amd64 }}
-      matrix_result_jazzy_arm64: ${{ steps.build_deb.outputs.matrix_result_jazzy_arm64 }}
+#      matrix_result_noetic_arm64: ${{ steps.build_deb.outputs.matrix_result_noetic_arm64 }}
+#      matrix_result_melodic_amd64: ${{ steps.build_deb.outputs.matrix_result_melodic_amd64 }}
+#      matrix_result_melodic_arm64: ${{ steps.build_deb.outputs.matrix_result_melodic_arm64 }}
+#      matrix_result_foxy_amd64: ${{ steps.build_deb.outputs.matrix_result_foxy_amd64 }}
+#      matrix_result_foxy_arm64: ${{ steps.build_deb.outputs.matrix_result_foxy_arm64 }}
+#      matrix_result_humble_amd64: ${{ steps.build_deb.outputs.matrix_result_humble_amd64 }}
+#      matrix_result_humble_arm64: ${{ steps.build_deb.outputs.matrix_result_humble_arm64 }}
+#      matrix_result_jazzy_amd64: ${{ steps.build_deb.outputs.matrix_result_jazzy_amd64 }}
+#      matrix_result_jazzy_arm64: ${{ steps.build_deb.outputs.matrix_result_jazzy_arm64 }}
 
     steps:
       - name: Checkout code
@@ -87,10 +87,6 @@ jobs:
           else
             git checkout ${{ github.sha }}
           fi
-
-      - name: Apply patches
-        run: |
-          ./patch_apply.sh  
 
       - name: Update package version
         if: github.event_name == 'release'
@@ -119,7 +115,7 @@ jobs:
           echo "matrix_result_${matrix_key}=${{ matrix.arch }},${{ matrix.ros_distribution }},${{ matrix.distro }},$download_url" >> $GITHUB_OUTPUT
           echo "download url: $download_url"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${DEB_FILENAME}
           path: ${{ github.workspace }}/artifacts/${{ env.DEB_FILENAME }}
@@ -135,16 +131,16 @@ jobs:
           echo "| --- | --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
           
           URLS=""
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_melodic_amd64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_melodic_arm64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_melodic_amd64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_melodic_arm64 }};"
           URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_noetic_amd64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_noetic_arm64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_foxy_amd64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_foxy_arm64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_humble_amd64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_humble_arm64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_jazzy_amd64 }};"
-          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_jazzy_arm64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_noetic_arm64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_foxy_amd64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_foxy_arm64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_humble_amd64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_humble_arm64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_jazzy_amd64 }};"
+#          URLS="${URLS}${{ needs.build-deb-package.outputs.matrix_result_jazzy_arm64 }};"
           
           IFS=';' read -ra URL_ARRAY <<< "$URLS"
           for url_item in "${URL_ARRAY[@]}"; do
