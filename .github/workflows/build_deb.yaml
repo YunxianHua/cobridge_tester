@@ -96,7 +96,7 @@ jobs:
           echo "GITHUB_REF: $GITHUB_REF"
           sed -i "s#<version>.*</version>#<version>$VERSION</version>#" ./package.xml
 
-      - name: Install CV Bridge
+      - name: Install depends
         run: |
           apt-get update
           apt-get install -y ros-${{ matrix.ros_distribution }}-cv-bridge

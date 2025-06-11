@@ -9,10 +9,10 @@
 #include <opencv2/opencv.hpp>
 
 #include <cobridge_tester/Common.h>
-#include <cobridge_tester/No_Request.h>
-#include <cobridge_tester/No_Response.h>
+#include <cobridge_tester/NoRequest.h>
+#include <cobridge_tester/NoResponse.h>
 #include <cobridge_tester/Null.h>
-#include <cobridge_tester/Newline_CRLF.h>
+#include <cobridge_tester/NewlineCRLF.h>
 
 class TesterNode {
 private:
@@ -97,8 +97,8 @@ private:
     }
     
     // No_Request服务的回调函数
-    bool noRequestCallback(cobridge_tester::No_Request::Request &req,
-                          cobridge_tester::No_Request::Response &res) {
+    bool noRequestCallback(cobridge_tester::NoRequest::Request &req,
+                          cobridge_tester::NoRequest::Response &res) {
         node_status_ = "/no_request service called";
         node_status_draw_count = 0;
         ROS_INFO("%s", node_status_.c_str());
@@ -108,8 +108,8 @@ private:
     }
     
     // No_Response服务的回调函数
-    bool noResponseCallback(cobridge_tester::No_Response::Request &req,
-                           cobridge_tester::No_Response::Response &res) {
+    bool noResponseCallback(cobridge_tester::NoResponse::Request &req,
+                           cobridge_tester::NoResponse::Response &res) {
         node_status_ = "/no_response service called with data: " + req.data;
         node_status_draw_count = 0;
         ROS_INFO("%s", node_status_.c_str());
@@ -126,8 +126,8 @@ private:
     }
     
     // Newline_CRLF服务的回调函数
-    bool newlineCrlfCallback(cobridge_tester::Newline_CRLF::Request &req,
-                          cobridge_tester::Newline_CRLF::Response &res) {
+    bool newlineCrlfCallback(cobridge_tester::NewlineCRLF::Request &req,
+                          cobridge_tester::NewlineCRLF::Response &res) {
         node_status_ = "/newline_crlf service called";
         node_status_draw_count = 0;
         ROS_INFO("%s", node_status_.c_str());
