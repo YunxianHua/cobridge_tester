@@ -8,7 +8,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "std_msgs/msg/string.hpp"
+
+#ifdef ROS2_VERSION_JAZZY
+#include "cv_bridge/cv_bridge.hpp"
+#else
 #include "cv_bridge/cv_bridge.h"
+#endif
 #include "opencv2/opencv.hpp"
 
 #include "cobridge_tester/srv/common.hpp"
