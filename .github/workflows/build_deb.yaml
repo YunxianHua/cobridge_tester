@@ -9,14 +9,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros_distribution: noetic
+          - ros_distribution: indigo
             arch: amd64
-            distro: focal
+            distro: trusty
             label: ubuntu-latest
-#          - ros_distribution: noetic
-#            arch: arm64
-#            distro: focal
-#            label: [ linux-arm-64-8c-32g-300gb ]
           - ros_distribution: melodic
             arch: amd64
             distro: bionic
@@ -24,6 +20,14 @@ jobs:
 #          - ros_distribution: melodic
 #            arch: arm64
 #            distro: bionic
+#            label: [ linux-arm-64-8c-32g-300gb ]
+          - ros_distribution: noetic
+            arch: amd64
+            distro: focal
+            label: ubuntu-latest
+#          - ros_distribution: noetic
+#            arch: arm64
+#            distro: focal
 #            label: [ linux-arm-64-8c-32g-300gb ]
           - ros_distribution: foxy
             arch: amd64
