@@ -85,7 +85,7 @@ jobs:
         if: matrix.qemu
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: arm64,arm/v7
+          platforms: linux/arm64,linux/arm/v7
 
       - name: Set up Docker Buildx
         if: matrix.qemu
