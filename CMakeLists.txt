@@ -98,13 +98,11 @@ elseif(NOT ROS2_FOUND EQUAL -1)
         message(STATUS "Building with ament_cmake")
         set(ROS_BUILD_TYPE "ament_cmake")
 
-        # 查找ROS2依赖
         find_package(rclcpp REQUIRED)
         find_package(sensor_msgs REQUIRED)
         find_package(std_msgs REQUIRED)
         find_package(rosidl_default_generators REQUIRED)
 
-        # 生成接口
         rosidl_generate_interfaces(${PROJECT_NAME}
                 "srv/Common.srv"
                 "srv/NewlineCRLF.srv"
@@ -113,14 +111,12 @@ elseif(NOT ROS2_FOUND EQUAL -1)
                 "srv/Null.srv"
                 DEPENDENCIES std_msgs
         )
-        
-        # 构建ROS2节点
+
         add_executable(tester_node ros2_tester/src/tester_node.cpp)
         target_link_libraries(tester_node
           ${OpenCV_LIBRARIES}
         )
-        
-        # 确保可以使用生成的接口
+
         rosidl_target_interfaces(tester_node ${PROJECT_NAME} "rosidl_typesupport_cpp")
         
         ament_target_dependencies(tester_node
@@ -129,20 +125,7 @@ elseif(NOT ROS2_FOUND EQUAL -1)
           std_msgs
           cv_bridge
         )
-        
-        # 安装
-        install(TARGETS
-          tester_node
-          DESTINATION lib/${PROJECT_NAME}
-        )
-        
-        # 安装launch文件
-        install(DIRECTORY
-          ros2_tester/launch/
-          DESTINATION share/${PROJECT_NAME}/launch
-        )
-        
-        # 导出依赖
+
         ament_export_dependencies(rosidl_default_runtime)
         ament_export_dependencies(rclcpp)
         ament_export_dependencies(sensor_msgs)
@@ -159,8 +142,26 @@ endif()
 # install
 if(ROS_BUILD_TYPE STREQUAL "catkin")
     message(STATUS "Install with catkin")
+    install(TARGETS
+            tester_node
+            RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
+
+    install(DIRECTORY
+            ros1_tester/launch/
+            DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+    )
 elseif(ROS_BUILD_TYPE STREQUAL "ament_cmake")
     message(STATUS "Install with ament")
+    install(TARGETS
+            tester_node
+            DESTINATION lib/${PROJECT_NAME}
+    )
+
+    install(DIRECTORY
+            ros2_tester/launch/
+            DESTINATION share/${PROJECT_NAME}/launch
+    )
     ament_package()
 endif()
 
