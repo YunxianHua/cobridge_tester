@@ -9,9 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - ros_distribution: indigo
-            arch: amd64
-            distro: trusty
+#          - ros_distribution: indigo
+#            arch: amd64
+#            distro: trusty
           - ros_distribution: indigo
             arch: armhf
             distro: trusty
