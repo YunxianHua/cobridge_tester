@@ -52,8 +52,9 @@ jobs:
 
     name: Build deb (ROS ${{ matrix.ros_distribution }} - ${{ matrix.arch }})
     runs-on: ${{ matrix.label }}
-    container: cobridge/ros-${{ matrix.ros_distribution }}:latest
-
+    outputs:
+      deb_filename: ${{ steps.package_info.outputs.deb_filename }}
+    
     steps:
       - name: Checkout code
         if: matrix.ros_distribution != 'indigo' && matrix.ros_distribution != 'melodic'
@@ -65,7 +66,7 @@ jobs:
         run: |
           echo "current sha: ${{ github.sha}}, current ref: ${{ github.ref }}"
           git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git config --global --add safe.directory /__w/cobridge_tester/cobridge_tester
+          git config --global --add safe.directory $GITHUB_WORKSPACE
           
           git clone https://github.com/${{ github.repository }}.git .
           
@@ -85,31 +86,33 @@ jobs:
           echo "GITHUB_REF: $GITHUB_REF"
           sed -i "s#<version>.*</version>#<version>$VERSION</version>#" ./package.xml
 
-      - name: Install depends
-        run: |
-          apt-get update
-          apt-get install -y ros-${{ matrix.ros_distribution }}-cv-bridge
-
-      - name: Generate debian/ directory and build .deb package
+      - name: Build deb package
         id: build_deb
-        run: |
-          rosdep update --rosdistro=${{ matrix.ros_distribution }} --include-eol-distros
-          bloom-generate rosdebian --ros-distro ${{ matrix.ros_distribution }}
-          DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -us -uc -a${{ matrix.arch }}
-          
-          mkdir -p $GITHUB_WORKSPACE/artifacts
-          cp ../*.deb $GITHUB_WORKSPACE/artifacts/
-
-          DEB_FILENAME=$(basename $(ls $GITHUB_WORKSPACE/artifacts/*.deb))
-          echo "DEB_FILENAME=$DEB_FILENAME" >> $GITHUB_ENV
-          
-          download_url="https://download.coscene.cn/cobridge_test/${DEB_FILENAME}"
-
-          matrix_key="${{ matrix.ros_distribution }}_${{ matrix.arch }}"
-          echo "matrix_result_${matrix_key}=${{ matrix.arch }},${{ matrix.ros_distribution }},${{ matrix.distro }},$download_url" >> $GITHUB_OUTPUT
-          echo "download url: $download_url"
-
-      - uses: actions/upload-artifact@v4
+        uses: docker://cobridge/ros-${{ matrix.ros_distribution }}:latest
         with:
-          name: ${{ env.DEB_FILENAME }}
-          path: ${{ github.workspace }}/artifacts/${{ env.DEB_FILENAME }}
+          args: >
+            bash -c "
+            apt-get update && apt-get install -y ros-${{ matrix.ros_distribution }}-cv-bridge &&
+            rosdep update --rosdistro=${{ matrix.ros_distribution }} --include-eol-distros &&
+            bloom-generate rosdebian --ros-distro ${{ matrix.ros_distribution }} &&
+            DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} &&
+            mkdir -p /github/workspace/deb-packages &&
+            cp ../*.deb /github/workspace/deb-packages/
+            "
+
+      - name: Get package info
+        id: package_info
+        run: |
+          DEB_FILENAME=$(basename $(ls deb-packages/*.deb 2>/dev/null || echo ""))
+          echo "deb_filename=$DEB_FILENAME" >> $GITHUB_OUTPUT
+          download_url="https://download.coscene.cn/cobridge_test/${DEB_FILENAME}"
+          echo "download_url=$download_url" >> $GITHUB_OUTPUT
+          echo "File: $DEB_FILENAME, URL: $download_url"
+
+      # 在宿主机上上传artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package_info.outputs.deb_filename || format('ros-{0}-{1}-deb', matrix.ros_distribution, matrix.arch) }}
+          path: deb-packages/*.deb
+          if-no-files-found: warn
