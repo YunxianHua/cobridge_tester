@@ -149,13 +149,42 @@ jobs:
             echo "status=success" >> $GITHUB_OUTPUT
           fi
 
+      - name: Build deb package (armhf)
+        id: build_deb_armhf
+        if: matrix.arch == 'armhf'
+        run: |
+          set +e
+          docker run --rm --platform linux/arm/v7 \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            cobridge/ros-${{ matrix.ros_distribution }}:latest \
+            bash -c "
+              rosdep update --rosdistro=${{ matrix.ros_distribution }} --include-eol-distros && \
+              bloom-generate rosdebian --ros-distro ${{ matrix.ros_distribution }} && \
+              DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} && \
+              mkdir -p /workspace/deb-packages && \
+              cp ../*.deb /workspace/deb-packages/
+            "
+          BUILD_RESULT=$?
+          if [ $BUILD_RESULT -ne 0 ]; then
+            echo "Build failed with exit code $BUILD_RESULT"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+          fi
+
       - name: Set build status
         id: build_status
         run: |
           if [ "${{ matrix.arch }}" = "amd64" ]; then
             echo "status=${{ steps.build_deb_amd64.outputs.status || 'unknown' }}" >> $GITHUB_OUTPUT
-          else
+          elif [ "${{ matrix.arch }}" = "arm64" ]; then
             echo "status=${{ steps.build_deb_arm64.outputs.status || 'unknown' }}" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.arch }}" = "armhf" ]; then
+            echo "status=${{ steps.build_deb_armhf.outputs.status || 'unknown' }}" >> $GITHUB_OUTPUT
+          else
+            echo "status=unknown" >> $GITHUB_OUTPUT
           fi
 
       - name: Get package info
