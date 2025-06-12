@@ -86,9 +86,9 @@ if(NOT ROS1_FOUND EQUAL -1)
         catkin_package(CATKIN_DEPENDS roscpp std_srvs message_runtime cv_bridge sensor_msgs)
         include_directories(${catkin_INCLUDE_DIRS})
 
-        add_executable(cobridge_tester ros1_tester/src/tester_node.cpp)
-        add_dependencies(cobridge_tester ${PROJECT_NAME}_generate_messages_cpp)
-        target_link_libraries(cobridge_tester ${catkin_LIBRARIES} )
+        add_executable(tester_node ros1_tester/src/tester_node.cpp)
+        add_dependencies(tester_node ${PROJECT_NAME}_generate_messages_cpp)
+        target_link_libraries(tester_node ${catkin_LIBRARIES} )
 
     else()
         message(FATAL_ERROR "Could not find catkin")
