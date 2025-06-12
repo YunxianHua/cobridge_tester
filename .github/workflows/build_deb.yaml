@@ -154,7 +154,7 @@ jobs:
         if: matrix.arch == 'armhf'
         run: |
           set +e
-          docker run --rm --platform linux/arm64 \
+          docker run --rm --platform linux/arm/v7 \
             -v ${{ github.workspace }}:/workspace \
             -w /workspace \
             cobridge/ros-${{ matrix.ros_distribution }}:latest \
