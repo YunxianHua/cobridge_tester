@@ -13,7 +13,7 @@ jobs:
             arch: amd64
             distro: trusty
           - ros_distribution: indigo
-            arch: arm64
+            arch: armhf
             distro: trusty
             qemu: true
           - ros_distribution: melodic
