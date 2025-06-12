@@ -88,16 +88,18 @@ jobs:
 
       - name: Build deb package
         id: build_deb
-        uses: docker://cobridge/ros-${{ matrix.ros_distribution }}:latest
-        with:
-          args: >
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            cobridge/ros-${{ matrix.ros_distribution }}:latest \
             bash -c "
-            apt-get update && apt-get install -y ros-${{ matrix.ros_distribution }}-cv-bridge &&
-            rosdep update --rosdistro=${{ matrix.ros_distribution }} --include-eol-distros &&
-            bloom-generate rosdebian --ros-distro ${{ matrix.ros_distribution }} &&
-            DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} &&
-            mkdir -p /github/workspace/deb-packages &&
-            cp ../*.deb /github/workspace/deb-packages/
+              apt-get update && apt-get install -y ros-${{ matrix.ros_distribution }}-cv-bridge &&
+              rosdep update --rosdistro=${{ matrix.ros_distribution }} --include-eol-distros &&
+              bloom-generate rosdebian --ros-distro ${{ matrix.ros_distribution }} &&
+              DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} &&
+              mkdir -p /workspace/deb-packages &&
+              cp ../*.deb /workspace/deb-packages/
             "
 
       - name: Get package info
