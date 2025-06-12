@@ -9,48 +9,48 @@ jobs:
       fail-fast: false
       matrix:
         include:
-#          - ros_distribution: indigo
-#            arch: amd64
-#            distro: trusty
+          - ros_distribution: indigo
+            arch: amd64
+            distro: trusty
           - ros_distribution: indigo
             arch: armhf
             distro: trusty
             qemu: true
-#          - ros_distribution: melodic
-#            arch: amd64
-#            distro: bionic
-#          - ros_distribution: melodic
-#            arch: arm64
-#            distro: bionic
-#            qemu: true
-#          - ros_distribution: noetic
-#            arch: amd64
-#            distro: focal
-#          - ros_distribution: noetic
-#            arch: arm64
-#            distro: focal
-#            qemu: true
-#          - ros_distribution: foxy
-#            arch: amd64
-#            distro: focal
-#          - ros_distribution: foxy
-#            arch: arm64
-#            distro: focal
-#            qemu: true
-#          - ros_distribution: humble
-#            arch: amd64
-#            distro: jammy
-#          - ros_distribution: humble
-#            arch: arm64
-#            distro: jammy
-#            qemu: true
-#          - ros_distribution: jazzy
-#            arch: amd64
-#            distro: noble
-#          - ros_distribution: jazzy
-#            arch: arm64
-#            distro: noble
-#            qemu: true
+          - ros_distribution: melodic
+            arch: amd64
+            distro: bionic
+          - ros_distribution: melodic
+            arch: arm64
+            distro: bionic
+            qemu: true
+          - ros_distribution: noetic
+            arch: amd64
+            distro: focal
+          - ros_distribution: noetic
+            arch: arm64
+            distro: focal
+            qemu: true
+          - ros_distribution: foxy
+            arch: amd64
+            distro: focal
+          - ros_distribution: foxy
+            arch: arm64
+            distro: focal
+            qemu: true
+          - ros_distribution: humble
+            arch: amd64
+            distro: jammy
+          - ros_distribution: humble
+            arch: arm64
+            distro: jammy
+            qemu: true
+          - ros_distribution: jazzy
+            arch: amd64
+            distro: noble
+          - ros_distribution: jazzy
+            arch: arm64
+            distro: noble
+            qemu: true
 
     name: Build deb (ROS ${{ matrix.ros_distribution }} - ${{ matrix.arch }})
     runs-on: ubuntu-latest
